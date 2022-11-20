@@ -52,17 +52,17 @@ Ast* parser_parse_block(Parser* parser) {
     Ast* temp = init_ast(ast_block);
     int i = 0;
     blockAst->children = calloc(++blockAst->children_size, sizeof(Ast*));
-    blockAst->children[blockAst->children_size-1] = parser_parse_line(parser);
+    blockAst->children[i++] = parser_parse_line(parser);
     parser->current_token = lexer_get_next_token(parser->lexer);
 
     while(parser->current_token->type == token_nline) {
         parser_eat(parser, token_nline);
         if(parser->current_token->type == token_eof)
             break;
-
+        
         blockAst->children = realloc(
             blockAst->children,
-            (blockAst->children_size++) * sizeof(struct AstStruct*)
+            (++blockAst->children_size) * sizeof(struct AstStruct*)
         );
         temp = parser_parse_line(parser);
         blockAst->children[i++] = temp;
