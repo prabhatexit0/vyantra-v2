@@ -8,9 +8,7 @@ Ast* init_ast(int type) {
     astNode->logical_instr = logical_none;
     astNode->reg = reg_none;
     astNode->children = (void*)0;
-    astNode->identifier = (void*)0;
-    astNode->identifier = (void*)0;
-    astNode->functionBody = (void*)0;
-    astNode->children = (void*)0;
+    astNode->identifierString = (void*)0;
+    astNode->scalerValue = (void*)0;
     return astNode;
 }

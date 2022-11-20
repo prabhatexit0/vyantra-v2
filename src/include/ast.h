@@ -43,7 +43,7 @@ typedef struct AstStruct {
 
 
     // ast_scaler,
-    int scalerValue;
+    int* scalerValue;
 
     // ast_identifier,
     char* identifierString;
