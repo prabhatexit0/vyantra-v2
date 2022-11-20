@@ -5,6 +5,7 @@ typedef struct AstStruct {
     enum {
         ast_function_decl,
         ast_function_call,
+        ast_block,
         ast_statement,
         ast_instruction,
         ast_register,
@@ -14,8 +15,9 @@ typedef struct AstStruct {
     } type;
 
 
-    // ast_statement,
+    // ast_statement or block,
     struct AstStruct** children;
+    unsigned int children_size; 
 
     // ast_instruction,
     enum {
@@ -32,6 +34,12 @@ typedef struct AstStruct {
         logical_or,
         logical_xor
     } logical_instr;
+    
+    enum {
+        misc_none,
+        misc_load,
+        misc_jmp
+    } misc_instr;
 
     // ast_register,
     enum {
@@ -43,7 +51,7 @@ typedef struct AstStruct {
 
 
     // ast_scaler,
-    int* scalerValue;
+    int scalerValue;
 
     // ast_identifier,
     char* identifierString;
@@ -51,4 +59,4 @@ typedef struct AstStruct {
 
 Ast* init_ast(int type);
 
-#endif AST_H
+#endif

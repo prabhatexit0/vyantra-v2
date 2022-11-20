@@ -20,7 +20,7 @@ int main(int argc, char* argv[]) {
 	codeString[i] = '\0';
 
 	lexer = init_lexer(codeString);
-
+	printf("code String\n %s", lexer->codeString);
 	while((temp = lexer_get_next_token(lexer)) != (void*)0) {
 		printf("Token type: %d  value: %s\n", temp->type, temp->value);
 	}

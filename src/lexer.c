@@ -67,6 +67,7 @@ Token* lexer_get_non_prefix_token(Lexer* lexer) {
     if(!strcmp("or", token->value)) token->type = token_or; 
     if(!strcmp("xor", token->value)) token->type = token_xor;
     if(!strcmp("jmp", token->value)) token->type = token_jmp;
+    if(!strcmp("load", token->value)) token->type = token_load;
     if(!strcmp("A", token->value) || 
        !strcmp("B", token->value) ||
        !strcmp("C", token->value)) token->type = token_reg;
@@ -78,7 +79,7 @@ Token* lexer_get_start_end_token(Lexer* lexer) {
     Token* token = lexer_get_identifier_token(lexer);
     if(!strcmp(token->value, "start")) 
         token->type = token_start;
-    else if(!strcmp(token->value, "start")) 
+    else if(!strcmp(token->value, "end")) 
         token->type = token_end;
     else 
         token->type = token_err;
