@@ -16,6 +16,7 @@ typedef struct AstStruct {
     // AST Start / End Props (eat?)
     // AST Block Props
     struct AstStruct** children;
+    unsigned int children_size; 
 
     // AST Binary Props
     enum {

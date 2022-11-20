@@ -21,7 +21,9 @@ typedef struct TokenStruct {
         token_label,
         token_jmp,
         token_nline,
-        token_err
+        token_err,
+        token_halt,
+        token_eof
     } type;
     char* value;
 } Token;

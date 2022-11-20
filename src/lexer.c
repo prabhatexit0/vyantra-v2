@@ -47,7 +47,7 @@ Token* lexer_get_next_token(Lexer* lexer) {
             }
         }
     }
-    return (void*)0;
+    return init_token(token_eof, "EOF");
 }
 
 
