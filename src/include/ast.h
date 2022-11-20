@@ -3,58 +3,59 @@
 
 typedef struct AstStruct {
     enum {
-        ast_function_decl,
-        ast_function_call,
+        ast_start,
+        ast_end,
         ast_block,
-        ast_statement,
-        ast_instruction,
-        ast_register,
-        ast_scaler,
-        ast_identifier,
-        ast_compound_node
+        ast_binary,
+        ast_load,
+        ast_jump,
+        ast_label,
+        ast_halt
     } type;
 
-
-    // ast_statement or block,
+    // AST Start / End Props (eat?)
+    // AST Block Props
     struct AstStruct** children;
-    unsigned int children_size; 
 
-    // ast_instruction,
+    // AST Binary Props
     enum {
         math_none,
         math_add,
         math_sub,
         math_mult,
-        math_div,
-    } math_instr;
+        math_div
+    } math_type;
 
     enum {
         logical_none,
         logical_and,
         logical_or,
         logical_xor
-    } logical_instr;
-    
-    enum {
-        misc_none,
-        misc_load,
-        misc_jmp
-    } misc_instr;
+    } logical_type ;
 
-    // ast_register,
     enum {
         reg_none,
         reg_one,
         reg_two,
         reg_three
-    } reg;
+    } reg_place_one, reg_place_two, reg_place_three;
+
+    int scalerIntValue;
+
+    
+    // AST Load Props
+    // * use reg_place_one for register
+    // and use scalerIntValue for scaler value
 
 
-    // ast_scaler,
-    int scalerValue;
+    // AST Jump Props
+    struct AstStruct* labelNode;
 
-    // ast_identifier,
-    char* identifierString;
+    // AST Label Props
+    struct AstStruct* branchRef;
+
+    // AST Halt Props
+    // just type is enough
 } Ast;
 
 Ast* init_ast(int type);
