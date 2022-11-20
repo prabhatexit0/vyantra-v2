@@ -28,14 +28,14 @@
 !start
 	jmp label
 	@func: 
-		load A 100
-		load B 200
+		load A #100
+		load B #200
 		add A B
 		halt
 	end @func
 	call func
 	:label
-	load A 99	
+	load A #99	
 	halt
 !end
 ```

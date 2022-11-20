@@ -32,4 +32,6 @@ Token* lexer_move_with_token(Lexer* lexer, Token* token);
 
 Token* lexer_get_new_line_token(Lexer* lexer);
 
+Token* lexer_get_label_token(Lexer* lexer);
+
 #endif

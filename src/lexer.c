@@ -40,6 +40,8 @@ Token* lexer_get_next_token(Lexer* lexer) {
                     return lexer_get_start_end_token(lexer);
                 case '\n':
                     return lexer_get_new_line_token(lexer);
+                case ':':
+                    return lexer_get_label_token(lexer);
                 default:
                     return lexer_get_non_prefix_token(lexer);
             }
@@ -130,4 +132,11 @@ Token* lexer_move_with_token(Lexer* lexer, Token* token) {
 Token* lexer_get_new_line_token(Lexer* lexer) {
     lexer_move(lexer);
     return init_token(token_nline, "nline");
+}
+
+Token* lexer_get_label_token(Lexer* lexer) {
+    lexer_move(lexer);
+    Token* token = lexer_get_identifier_token(lexer);
+    token->type = token_label;
+    return token;
 }

@@ -4,26 +4,26 @@
 #include "include/token.h"
 
 int main(int argc, char* argv[]) {
-	FILE* fptr;
+	int i = 0;
 	char codeString[10000];
 	char ch;
-	int i = 0;
+	FILE* fptr = fopen(argv[1], "r");
 	Token* temp = (void*)0;
-	Lexer* lexer = init_lexer("");
+	Lexer* lexer = (void*)0;
 
-	fptr = fopen("/home/prabhatexit0/work/privado/vy-asm/src/test.vy", "r");
+	if(fptr == NULL) {
+		printf("Error while opening the file!");
+	}
 
 	while((ch = fgetc(fptr)) != EOF)
 		codeString[i++] = ch;
 	codeString[i] = '\0';
 
-	lexer->codeString = codeString;
-	lexer->c = codeString[0];
+	lexer = init_lexer(codeString);
 
 	while((temp = lexer_get_next_token(lexer)) != (void*)0) {
 		printf("Token type: %d  value: %s\n", temp->type, temp->value);
 	}
-	
 
 	return 0;
 }
