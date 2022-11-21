@@ -30,6 +30,9 @@ typedef struct AstStruct {
         instr_logical_xor,
         instr_load,
         instr_jump,
+        instr_label,
+        instr_start,
+        instr_end,
         instr_halt,
     } instr_type;
 

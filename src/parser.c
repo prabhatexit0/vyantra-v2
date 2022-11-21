@@ -2,8 +2,8 @@
 #include "include/lexer.h"
 #include "include/ast.h"
 #include "include/ast.h"
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 void parser_eat(Parser* parser, int token_type) {
@@ -77,11 +77,16 @@ Ast* parser_parse_block(Parser* parser) {
 }
 
 Ast* parser_parse_start_end(Parser* parser) {
+    Ast* astNode = (void*)0;
     if(parser->current_token->type == token_start) {
-        return init_ast(ast_start);
+        astNode = init_ast(ast_start);
+        astNode->instr_type = instr_start;
+        return astNode;
     } 
     else if(parser->current_token->type == token_end) {
-        return init_ast(ast_end);
+        astNode = init_ast(ast_end);
+        astNode->instr_type = instr_end;
+        return astNode;
     }
     else {
         printf("Error: Unexpected token!! Should be start or end\n");
@@ -144,6 +149,9 @@ Ast* parser_parse_binary(Parser* parser) {
 
 Ast* parser_parse_load(Parser* parser) {
     Ast* loadAst = init_ast(ast_load);
+
+    loadAst->instr_type = instr_load;
+
     parser->current_token = lexer_get_next_token(parser->lexer);
     if(parser->current_token->type != token_reg) {
         printf("Error: Expected register token\n");
@@ -153,9 +161,9 @@ Ast* parser_parse_load(Parser* parser) {
     if(!strcmp(parser->current_token->value, "A")) 
         loadAst->load_reg = reg_one;
     else if(!strcmp(parser->current_token->value, "B")) 
-        loadAst->oper_reg_one = reg_two;
+        loadAst->load_reg = reg_two;
     else if(!strcmp(parser->current_token->value, "C")) 
-        loadAst->oper_reg_two = reg_three;
+        loadAst->load_reg = reg_three;
     else {
         printf("Error: Unexpected Error in parsing\n");
         printf("- Token type: %d | Token value: %s", parser->current_token->type, parser->current_token->value);
@@ -168,7 +176,9 @@ Ast* parser_parse_load(Parser* parser) {
         printf("Error: Unexpected Error in parsing, Expected a scaler token\n");
         exit(1);
     }
-    loadAst->scalerIntValue = atoi(parser->current_token->value);
+
+    char* tokenValue = parser->current_token->value;
+    loadAst->scalerIntValue = atoi(tokenValue);
 
     return loadAst;
 }
@@ -177,19 +187,23 @@ Ast* parser_parse_jump(Parser* parser) {
     Ast* jumpAst = init_ast(ast_jump);    
     jumpAst->instr_type = instr_jump;
     parser->current_token = lexer_get_next_token(parser->lexer);
-    jumpAst->scalerIntValue = atoi(parser->current_token->value);
-    printf("jump token value: %s\n", parser->current_token->value);
+    char* tokenValue = parser->current_token->value;
+    jumpAst->scalerIntValue = atoi(tokenValue);
     return jumpAst;
 }
 
 Ast* parser_parse_label(Parser* parser) {
     Ast* labelAst = init_ast(ast_label);
-    labelAst->scalerIntValue = atoi(parser->current_token->value);
+    labelAst->instr_type = instr_label;
+    char* tokenValue = parser->current_token->value;
+    labelAst->scalerIntValue = atoi(tokenValue);
     return labelAst;
 }
 
 Ast* parser_parse_halt(Parser* parser) {
-    return init_ast(ast_halt);
+    Ast* haltAst = init_ast(ast_halt);
+    haltAst->instr_type = instr_halt;
+    return haltAst;
 }
 
 int parser_get_register_token(char* value) {

@@ -1,5 +1,5 @@
 !start
-	:2
+	:20
 	load A #100
 	load B #100
 	add C A B
