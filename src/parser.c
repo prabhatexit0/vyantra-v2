@@ -39,6 +39,10 @@ Ast* parser_parse_line(Parser* parser) {
         case token_start:
         case token_end:
             return parser_parse_start_end(parser);
+        case token_jmp:
+            return parser_parse_jump(parser);
+        case token_label:
+            return parser_parse_label(parser);
         default:
             printf("Error: Unexpected token while parsing statement Type: %d\n", parser->current_token->type);
             exit(1);
@@ -170,11 +174,18 @@ Ast* parser_parse_load(Parser* parser) {
 }
 
 Ast* parser_parse_jump(Parser* parser) {
-    // Todo: creating the jump parser
+    Ast* jumpAst = init_ast(ast_jump);    
+    jumpAst->instr_type = instr_jump;
+    parser->current_token = lexer_get_next_token(parser->lexer);
+    jumpAst->scalerIntValue = atoi(parser->current_token->value);
+    printf("jump token value: %s\n", parser->current_token->value);
+    return jumpAst;
 }
 
 Ast* parser_parse_label(Parser* parser) {
-    // Todo: creating the label parser
+    Ast* labelAst = init_ast(ast_label);
+    labelAst->scalerIntValue = atoi(parser->current_token->value);
+    return labelAst;
 }
 
 Ast* parser_parse_halt(Parser* parser) {

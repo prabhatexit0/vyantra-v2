@@ -49,10 +49,10 @@ typedef struct AstStruct {
 
 
     // AST Jump Props
-    struct AstStruct* labelNode;
+    // store_label id in scalerIntValue
 
     // AST Label Props
-    struct AstStruct* branchRef;
+    // store_label id in scalerIntValue
 
     // AST Halt Props
     // just type is enough

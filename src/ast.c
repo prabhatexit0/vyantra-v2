@@ -10,7 +10,5 @@ Ast* init_ast(int type) {
     astNode->oper_reg_one = reg_none;
     astNode->oper_reg_two = reg_none;
     astNode->scalerIntValue = 0;
-    astNode->labelNode = (void*)0;
-    astNode->branchRef = (void*)0;
     return astNode;
 }
