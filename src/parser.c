@@ -104,25 +104,25 @@ Ast* parser_parse_binary(Parser* parser) {
 
     switch(operation) {
         case token_add:
-            binaryAst->math_type = math_add;
+            binaryAst->instr_type = instr_math_add;
             break;
         case token_sub:
-            binaryAst->math_type = math_sub;
+            binaryAst->instr_type = instr_math_sub;
             break;
         case token_mult:
-            binaryAst->math_type = math_mult;
+            binaryAst->instr_type = instr_math_mult;
             break;
         case token_div:
-            binaryAst->math_type = math_div;
+            binaryAst->instr_type = instr_math_div;
             break;
         case token_and:
-            binaryAst->logical_type = logical_and;
+            binaryAst->instr_type = instr_logical_and;
             break;
         case token_or:
-            binaryAst->logical_type = logical_or;
+            binaryAst->instr_type = instr_logical_or;
             break;
         case token_xor:
-            binaryAst->logical_type = logical_or;
+            binaryAst->instr_type = instr_logical_xor;
             break;
         default:
             printf("Error: Unexpected Token\n");
@@ -130,9 +130,9 @@ Ast* parser_parse_binary(Parser* parser) {
     }
 
 
-    binaryAst->reg_place_one = temp_reg[0];
-    binaryAst->reg_place_two = temp_reg[1];
-    binaryAst->reg_place_three = temp_reg[2];
+    binaryAst->load_reg = temp_reg[0];
+    binaryAst->oper_reg_one = temp_reg[1];
+    binaryAst->oper_reg_two = temp_reg[2];
 
     return binaryAst;
 }
@@ -147,11 +147,11 @@ Ast* parser_parse_load(Parser* parser) {
     } 
 
     if(!strcmp(parser->current_token->value, "A")) 
-        loadAst->reg_place_one = reg_one;
+        loadAst->load_reg = reg_one;
     else if(!strcmp(parser->current_token->value, "B")) 
-        loadAst->reg_place_one = reg_two;
+        loadAst->oper_reg_one = reg_two;
     else if(!strcmp(parser->current_token->value, "C")) 
-        loadAst->reg_place_one = reg_three;
+        loadAst->oper_reg_two = reg_three;
     else {
         printf("Error: Unexpected Error in parsing\n");
         printf("- Token type: %d | Token value: %s", parser->current_token->type, parser->current_token->value);

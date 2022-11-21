@@ -18,28 +18,27 @@ typedef struct AstStruct {
     struct AstStruct** children;
     unsigned int children_size; 
 
-    // AST Binary Props
+    // Instructions:
     enum {
-        math_none,
-        math_add,
-        math_sub,
-        math_mult,
-        math_div
-    } math_type;
-
-    enum {
-        logical_none,
-        logical_and,
-        logical_or,
-        logical_xor
-    } logical_type ;
+        instr_none,
+        instr_math_add,
+        instr_math_sub,
+        instr_math_mult,
+        instr_math_div,
+        instr_logical_and,
+        instr_logical_or,
+        instr_logical_xor,
+        instr_load,
+        instr_jump,
+        instr_halt,
+    } instr_type;
 
     enum {
         reg_none,
         reg_one,
         reg_two,
         reg_three
-    } reg_place_one, reg_place_two, reg_place_three;
+    } load_reg, oper_reg_one, oper_reg_two;
 
     int scalerIntValue;
 
