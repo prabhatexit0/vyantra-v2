@@ -4,6 +4,7 @@
 #include "include/token.h"
 #include "include/parser.h"
 #include "include/yasm.h"
+#include "include/yantra.h"
 
 void dfs(Ast* root) {
 	int i = 0;
@@ -65,6 +66,8 @@ int main(int argc, char* argv[]) {
 	// unsigned bin = yas_visit_binary(binaryNode);
 
 	// printf("instr %d load_reg %d oper_reg1 %d oper_reg2 %d\n")
+
+	yantra_run(instructions, length_of_ins);
 
 	return 0;
 }
