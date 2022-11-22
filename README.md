@@ -44,10 +44,11 @@ yantra {file_name}.ys
 Vyantra is a register based VM and supports three registers.
 Three registers can be accessed in the language using `A`, `B` and `C` for first, second and third register repectively.
 
+and you can load positive integer value by prefixing it with `#`.
 ### Syntax:
 1. **Loading instructions into the memory:**
 ```
-load {A | B | C}
+load {A | B | C} #{integer_value}
 ```
 
 2. **Performing binary operations:**
@@ -74,13 +75,25 @@ halt
 ```
 
 ### Sample Program
+
+#### Program 1:
 ```
 !start
-    load B 40
-    load C 2
+    load B #40
+    load C #2
     add A B C
 !end
 ```
-
+#### Program 2:
+_Warning: Infinite loop_
+```
+!start
+    :9
+    load B #40
+    load C #2
+    add A B C
+    jmp 9
+!end
+```
 
 _more to be added soon_
