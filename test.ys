@@ -1,5 +1,7 @@
 !start
+	:2
 	load B #1
 	load C #1
 	add A B C
+	jmp 2
 !end

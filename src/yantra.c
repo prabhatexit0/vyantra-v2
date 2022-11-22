@@ -7,6 +7,7 @@
 #define INSTR_BUFFER_SIZE 1024
 unsigned registers[4] = {0};
 unsigned instr_buffer[INSTR_BUFFER_SIZE] = {0};
+unsigned labels[1024];
 int program_counter = 0;
 int is_running = 1;
 
@@ -25,6 +26,13 @@ Instruction* yantra_fetch() {
     return init_instruction(instr_buffer[program_counter++]);
 }
 
+void yantra_set_label(int label_value) {
+    labels[label_value] = program_counter;
+}
+
+void yantra_jump_to_label(int label_value) {
+    program_counter = labels[label_value];
+}
 
 void yantra_eval(Instruction* instr) {
     switch(instr->instr_type) {
@@ -53,8 +61,12 @@ void yantra_eval(Instruction* instr) {
             registers[instr->load_reg] = instr->scaler_value;
             break;
         case instr_jump:
+            // Todo
+            yantra_jump_to_label(instr->scaler_value);
             break;
         case instr_label:
+            // Todo
+            yantra_set_label(instr->scaler_value);
             break;
         case instr_start:
             break;
