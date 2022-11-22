@@ -38,5 +38,49 @@ and in case you've installed it, then from any directory where your file is loca
 yantra {file_name}.ys
 ```
 
+## How to code in **Vyantra-Assembly**?
+
+## Specifications
+Vyantra is a register based VM and supports three registers.
+Three registers can be accessed in the language using `A`, `B` and `C` for first, second and third register repectively.
+
+### Syntax:
+1. **Loading instructions into the memory:**
+```
+load {A | B | C}
+```
+
+2. **Performing binary operations:**
+Some binary mathematical and logical operations are also supported.
+Binary Instructions: `add`, `sub`, `mult`, `div`, `and`, `or`, `xor`
+```
+{binary_instruction} {loading register} {operand register one} {operand register two}
+```
+
+3. **Jump Statements**
+you can define label by prefixing a postive integer value with `:`
+Like this:
+```
+:{int_value}
+```
+and to jump to he label defined, You can use this instruction.
+```
+jmp {int_value}
+```
+
+4. To halt a program. You can use `halt` instruction.
+```
+halt
+```
+
+### Sample Program
+```
+!start
+    load B 40
+    load C 2
+    add A B C
+!end
+```
 
 
+_more to be added soon_
