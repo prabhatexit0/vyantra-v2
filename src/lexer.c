@@ -90,26 +90,31 @@ Token* lexer_get_start_end_token(Lexer* lexer) {
 
 Token* lexer_get_scaler_token(Lexer* lexer) {
     lexer_move(lexer);
-    char str[255];
-    int i = 0;
-    while(lexer->c != ' ' && lexer->c != '\n' && lexer->c != '\0' && i < strlen(lexer->codeString)) {
+    char* str = calloc(1, sizeof(char));
+    str[0] = '\0';
+    char *sch;
+    while(lexer->c != ' ' && lexer->c != '\n' && lexer->c != '\0') {
         if(lexer->c >= '0' && lexer->c <= '9')  {
-            str[i++] = lexer->c;
+            sch = lexer_get_char_as_string(lexer);
+            str = realloc(str, sizeof(char)  * (strlen(str) + strlen(sch) + 1));
+            strcat(str, sch);
         }
         lexer_move(lexer);
     }
-    str[i] = '\0';
     return init_token(token_scaler, str);
 }
 
 Token* lexer_get_identifier_token(Lexer* lexer) {
-    char str[255];
-    int i = 0;
-    while(lexer->c != ' ' && lexer->c != '\n' && lexer->c != '\0' && i < strlen(lexer->codeString)) { 
-        str[i++] = lexer->c;
+    char* str = calloc(1, sizeof(char));
+    str[0] = '\0';
+    char *sch;
+
+    while(lexer->c != ' ' && lexer->c != '\n' && lexer->c != '\0') { 
+        sch = lexer_get_char_as_string(lexer);
+        str = realloc(str, sizeof(char)  * (strlen(str) + strlen(sch) + 1));
+        strcat(str, sch);
         lexer_move(lexer);
     }
-    str[i] = '\0';
 
     return init_token(token_identifier, str);
 }
@@ -121,7 +126,7 @@ Token* lexer_get_register_token(Lexer* lexer) {
 
 char* lexer_get_char_as_string(Lexer* lexer) {
     char* str = calloc(2, sizeof(char));
-    str[1] = lexer->c;
+    str[0] = lexer->c;
     str[1] = '\0';
     return str;
 }

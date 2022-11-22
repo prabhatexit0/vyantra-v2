@@ -1,5 +1,5 @@
 !start
-    load c #10
-    load b #10
+    load c #5
+    load b #4
     add a b c
 !end

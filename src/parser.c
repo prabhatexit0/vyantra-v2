@@ -177,8 +177,8 @@ Ast* parser_parse_load(Parser* parser) {
     }
 
     char* tokenValue = parser->current_token->value;
+    tokenValue[sizeof(tokenValue)] = '\0';
     loadAst->scalerIntValue = atoi(tokenValue);
-
     return loadAst;
 }
 
