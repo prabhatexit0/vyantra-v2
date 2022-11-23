@@ -93,9 +93,6 @@ void yantra_show_registers()  {
 void yantra_run(unsigned* instructions, int length_of_ins) {
     Instruction* instr = (void*)0;
     int i = 0;
-    printf("-----------\n");
-    printf("In Yantra VM\n");
-    printf("-----------\n");
 
     for(i = 0; i < length_of_ins; i++) {
         instr_buffer[i] = instructions[i];

@@ -5,18 +5,18 @@
 #include <stdio.h>
 
 
-Lexer* init_lexer(char* codeString) {
+Lexer* init_lexer(char* source_code) {
     Lexer* lex = calloc(1, sizeof(Lexer));
     lex->i = 0;
-    lex->codeString = codeString;
-    lex->c = codeString[lex->i];
+    lex->source_code = source_code;
+    lex->c = source_code[lex->i];
     return lex;
 }
 
 void lexer_move(Lexer* lexer) {
-    if(lexer->c != '\0' && lexer->i < strlen(lexer->codeString)) {
+    if(lexer->c != '\0' && lexer->i < strlen(lexer->source_code)) {
         lexer->i++;
-        lexer->c = lexer->codeString[lexer->i];
+        lexer->c = lexer->source_code[lexer->i];
     }
 }
 
@@ -27,7 +27,7 @@ void lexer_skip_ws(Lexer* lexer) {
 }
 
 Token* lexer_get_next_token(Lexer* lexer) {
-    while(lexer->c != '\0' && lexer->i < strlen(lexer->codeString)) {
+    while(lexer->c != '\0' && lexer->i < strlen(lexer->source_code)) {
         if(lexer->c == ' ' || lexer->c == '\t') {
             lexer_skip_ws(lexer);
         } else {
@@ -53,8 +53,9 @@ Token* lexer_get_next_token(Lexer* lexer) {
 
 Token* lexer_get_function_token(Lexer* lexer) {
     lexer_move(lexer);
-    Token* identifierToken = lexer_get_identifier_token(lexer);
-    identifierToken->type = token_func;
+    Token* token = lexer_get_identifier_token(lexer);
+    token->type = token_func;
+    return token;
 }
 
 Token* lexer_get_non_prefix_token(Lexer* lexer) {
