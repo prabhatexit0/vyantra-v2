@@ -43,11 +43,11 @@ For verbose console output:
 
 if you've installed:
 ```
-yantra {file_name}.ys
+yantra {file_name}.ys -v
 ```
 and if you have not installed (from project root directory):
 ```
-./yantra.out {file_name}.ys
+./yantra.out {file_name}.ys -v
 ```
 
 
