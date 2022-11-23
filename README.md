@@ -38,6 +38,19 @@ and in case you've installed it, then from any directory where your file is loca
 yantra {file_name}.ys
 ```
 
+also you can add `-v` flag if you want to see verbose output.
+For verbose console output: 
+
+if you've installed:
+```
+yantra {file_name}.ys
+```
+and if you have not installed (from project root directory):
+```
+./yantra.out {file_name}.ys
+```
+
+
 ## How to code in **Vyantra-Assembly**?
 
 ## Specifications
