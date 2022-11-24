@@ -62,7 +62,7 @@ Ast* parser_parse_block(Parser* parser) {
 
     while(parser->current_token->type == token_nline) {
         parser_eat(parser, token_nline);
-        if(parser->current_token->type == token_eof)
+        if(parser->current_token->type == token_eof || parser->current_token->type == token_nline)
             break;
         
         blockAst->children = realloc(
@@ -216,7 +216,7 @@ Ast* parser_parse_show(Parser* parser) {
     return showAst;
 }
 
-Ast* parser_parse_halt(Parser* parser) {
+Ast* parser_parse_halt() {
     Ast* haltAst = init_ast(ast_halt);
     haltAst->instr_type = instr_halt;
     return haltAst;

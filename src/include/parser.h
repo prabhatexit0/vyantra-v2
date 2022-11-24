@@ -29,7 +29,7 @@ Ast* parser_parse_label(Parser* parser);
 
 Ast* parser_parse_show(Parser* parser);
 
-Ast* parser_parse_halt(Parser* parser);
+Ast* parser_parse_halt();
 
 int parser_get_register_token(char* value);
 
