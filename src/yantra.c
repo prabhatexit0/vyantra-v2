@@ -7,7 +7,7 @@
 #define INSTR_BUFFER_SIZE 1024
 unsigned registers[4] = {0};
 char register_tags[NUM_REGS] = {'R', 'A', 'B', 'C'};
-unsigned instr_buffer[INSTR_BUFFER_SIZE] = {0};
+Instruction** instr_buffer;
 unsigned labels[1024];
 int program_counter = 0;
 int is_running = 1;
@@ -24,15 +24,7 @@ Instruction* init_instruction(unsigned instr_encoded) {
 }
 
 Instruction* yantra_fetch() {
-    return init_instruction(instr_buffer[program_counter++]);
-}
-
-void yantra_set_label(int label_value) {
-    labels[label_value] = program_counter;
-}
-
-void yantra_jump_to_label(int label_value) {
-    program_counter = labels[label_value];
+    return instr_buffer[program_counter++];
 }
 
 void yantra_eval(Instruction* instr) {
@@ -62,12 +54,7 @@ void yantra_eval(Instruction* instr) {
             registers[instr->load_reg] = instr->scaler_value;
             break;
         case instr_jump:
-            // Todo
-            yantra_jump_to_label(instr->scaler_value);
-            break;
-        case instr_label:
-            // Todo
-            yantra_set_label(instr->scaler_value);
+            program_counter = labels[instr->scaler_value];
             break;
         case instr_start:
             break;
@@ -86,11 +73,15 @@ void yantra_eval(Instruction* instr) {
 
 
 void yantra_run(unsigned* instructions, int length_of_ins) {
-    Instruction* instr = (void*)0;
+    Instruction* instr = NULL;
+    instr_buffer = calloc(length_of_ins, sizeof(Instruction*));
     int i = 0;
 
     for(i = 0; i < length_of_ins; i++) {
-        instr_buffer[i] = instructions[i];
+        instr_buffer[i] = init_instruction(instructions[i]);
+        if(instr_buffer[i]->instr_type == instr_label) {
+            labels[instr_buffer[i]->scaler_value] = i;
+        }
     }
 
     while(is_running) {

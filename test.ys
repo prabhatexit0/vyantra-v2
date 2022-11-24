@@ -1,10 +1,7 @@
 !start
-    :2
-    load A #33
     show A
-    load B #42
-    show B
-    add C A B
-    show C
     jmp 2
+    show B
+    :2
+    show C
 !end
