@@ -19,8 +19,6 @@ void yantra_jump_to_label(int label_value);
 
 void yantra_eval(Instruction* instr);
 
-void yantra_show_registers();
-
 void yantra_run(unsigned* instructions, int length_of_ins);
 
 

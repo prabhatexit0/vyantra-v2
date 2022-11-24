@@ -42,12 +42,14 @@ Ast* parser_parse_line(Parser* parser) {
             return parser_parse_jump(parser);
         case token_label:
             return parser_parse_label(parser);
+        case token_show:
+            return parser_parse_show(parser);
         default:
             printf("Error: Unexpected token while parsing statement Type: %d\n", parser->current_token->type);
             exit(1);
     }
     
-    return (void*)0;
+    return NULL;
 }
 
 Ast* parser_parse_block(Parser* parser) {
@@ -76,7 +78,7 @@ Ast* parser_parse_block(Parser* parser) {
 }
 
 Ast* parser_parse_start_end(Parser* parser) {
-    Ast* astNode = (void*)0;
+    Ast* astNode = NULL;
     if(parser->current_token->type == token_start) {
         astNode = init_ast(ast_start);
         astNode->instr_type = instr_start;
@@ -197,6 +199,21 @@ Ast* parser_parse_label(Parser* parser) {
     char* tokenValue = parser->current_token->value;
     labelAst->scalerIntValue = atoi(tokenValue);
     return labelAst;
+}
+
+Ast* parser_parse_show(Parser* parser) {
+    Ast* showAst = init_ast(ast_show);
+    showAst->instr_type = instr_show;
+    parser->current_token = lexer_get_next_token(parser->lexer);
+    
+    // Current token should be a reigster token.
+    if(parser->current_token->type != token_reg) {
+        printf("Error: Unexpected Token, Expected a register token after print\n");
+        exit(1);
+    }
+
+    showAst->load_reg = parser_get_register_token(parser->current_token->value);    
+    return showAst;
 }
 
 Ast* parser_parse_halt(Parser* parser) {

@@ -10,13 +10,14 @@ typedef struct AstStruct {
         ast_load,
         ast_jump,
         ast_label,
+        ast_show,
         ast_halt
     } type;
 
     // AST Start / End Props (eat?)
     // AST Block Props
     struct AstStruct** children;
-    unsigned int children_size; 
+    unsigned int children_size;
 
     // Instructions:
     enum {
@@ -31,6 +32,7 @@ typedef struct AstStruct {
         instr_load,
         instr_jump,
         instr_label,
+        instr_show,
         instr_start,
         instr_end,
         instr_halt,
@@ -45,11 +47,9 @@ typedef struct AstStruct {
 
     int scalerIntValue;
 
-    
     // AST Load Props
     // * use reg_place_one for register
     // and use scalerIntValue for scaler value
-
 
     // AST Jump Props
     // store_label id in scalerIntValue
@@ -59,6 +59,9 @@ typedef struct AstStruct {
 
     // AST Halt Props
     // just type is enough
+
+    // Ast Show Props
+    // use load_reg for the specified register
 } Ast;
 
 Ast* init_ast(int type);

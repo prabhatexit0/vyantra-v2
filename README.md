@@ -87,14 +87,15 @@ jmp {int_value}
 halt
 ```
 
-### Sample Program
+### Sample Programs
 
 #### Program 1:
 ```
 !start
-    load B #40
-    load C #2
-    add A B C
+    load A #40
+    load B #2
+    add C B C
+    show C
 !end
 ```
 #### Program 2:
@@ -105,6 +106,9 @@ _Warning: Infinite loop_
     load B #40
     load C #2
     add A B C
+    show A
+    show B
+    show C
     jmp 9
 !end
 ```

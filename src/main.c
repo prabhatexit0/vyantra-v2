@@ -19,7 +19,7 @@ void dfs(Ast* root) {
 }  
 
 void verbose_stdout(char* source_code) {
-    int32_t i = 0;
+    int i = 0;
 	Token* temp = NULL;
 	Parser* parser = NULL;
 	Ast* root = NULL;

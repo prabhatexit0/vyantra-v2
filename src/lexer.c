@@ -70,6 +70,7 @@ Token* lexer_get_non_prefix_token(Lexer* lexer) {
     if(!strcmp("jmp", token->value)) token->type = token_jmp;
     if(!strcmp("load", token->value)) token->type = token_load;
     if(!strcmp("halt", token->value)) token->type = token_halt;
+    if(!strcmp("show", token->value)) token->type = token_show;
     if(!strcmp("A", token->value) || 
        !strcmp("B", token->value) ||
        !strcmp("C", token->value)) token->type = token_reg;

@@ -19,6 +19,7 @@ typedef struct TokenStruct {
         token_xor,
         token_load,
         token_label,
+        token_show,
         token_jmp,
         token_nline,
         token_err,

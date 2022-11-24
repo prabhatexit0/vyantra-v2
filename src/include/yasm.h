@@ -16,10 +16,10 @@ unsigned yas_visit_jump(Ast* jumpAst);
 
 unsigned yas_visit_label(Ast* labelAst);
 
+unsigned yas_visit_show(Ast* showAst);
+
 unsigned yas_visit_halt(Ast* haltAst);
 
 unsigned yas_visit_start_end(Ast* haltAst);
-
-void yas_write_binary(unsigned* instructions, unsigned int size, char* file_name);
 
 #endif

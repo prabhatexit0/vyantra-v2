@@ -6,6 +6,7 @@
 #define NUM_REGS 4
 #define INSTR_BUFFER_SIZE 1024
 unsigned registers[4] = {0};
+char register_tags[NUM_REGS] = {'R', 'A', 'B', 'C'};
 unsigned instr_buffer[INSTR_BUFFER_SIZE] = {0};
 unsigned labels[1024];
 int program_counter = 0;
@@ -76,19 +77,13 @@ void yantra_eval(Instruction* instr) {
         case instr_halt:
             is_running = 0;
             break;
+        case instr_show:
+            printf("Register '%c': %d\n", register_tags[instr->load_reg] , registers[instr->load_reg]);
         default:
             break;
     }
 }
 
-void yantra_show_registers()  {
-    int i = 0;
-    printf("Registers: ");
-    for(i = 0; i < NUM_REGS; i++) {
-        printf("%d ", registers[i]);
-    }
-    printf("\n");
-}
 
 void yantra_run(unsigned* instructions, int length_of_ins) {
     Instruction* instr = (void*)0;
@@ -101,6 +96,5 @@ void yantra_run(unsigned* instructions, int length_of_ins) {
     while(is_running) {
         instr = yantra_fetch();
         yantra_eval(instr);
-        yantra_show_registers();
     }
 }

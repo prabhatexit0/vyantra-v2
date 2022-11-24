@@ -47,6 +47,8 @@ unsigned yas_visit_line(Ast* lineAst) {
             return yas_visit_label(lineAst);
         case ast_halt: 
             return yas_visit_halt(lineAst);
+        case ast_show:
+            return yas_visit_show(lineAst);
     }
     return 0;
 }
@@ -82,6 +84,13 @@ unsigned yas_visit_label(Ast* astNode) {
     return labelInstruction;
 }
 
+unsigned yas_visit_show(Ast* showNode) {
+    unsigned showInstruction = 0;
+    showInstruction = showNode->instr_type << 24;
+    showInstruction += showNode->load_reg << 20;
+    return showInstruction;
+}
+
 unsigned yas_visit_halt(Ast* astNode) {
     unsigned haltInstruction = 0;
     haltInstruction = astNode->instr_type << 24;
@@ -93,8 +102,4 @@ unsigned yas_visit_start_end(Ast* astNode) {
     instruction = astNode->instr_type << 24;
     return instruction;
 } 
-
-void yas_write_binary(unsigned* instructions, unsigned int size, char* file_name) {
-    return;
-}
 
