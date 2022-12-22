@@ -2,6 +2,7 @@
     "files.associations": {
         "token.h": "c",
         "ast.h": "c",
-        "yantra.h": "c"
+        "yantra.h": "c",
+        "lexer.h": "c"
     }
 }

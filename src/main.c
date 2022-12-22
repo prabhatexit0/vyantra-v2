@@ -16,6 +16,11 @@ void dfs(Ast* root) {
 	for(i = 0; i < root->children_size; i++) {
 		dfs(root->children[i]);
 	}
+    if(root->block != NULL) {
+        for(i = 0; i < root->block->children_size; i++) {
+            dfs(root->block->children[i]);
+        }
+    }
 }  
 
 void verbose_stdout(char* source_code) {
@@ -37,7 +42,8 @@ void verbose_stdout(char* source_code) {
 	lexer = init_lexer(source_code);
 
 	parser = init_parser(lexer);
-	root = parser_parse_block(parser);
+	parser = init_parser(lexer);
+	root = parser_parse_block(parser, "global");
     printf("Source Code: \n");
     printf("=====\n");
     printf("%s\n", lexer->source_code);
@@ -52,15 +58,15 @@ void verbose_stdout(char* source_code) {
     printf("=====\n");
 
 	int length_of_ins = root->children_size;
-	unsigned* instructions = yas_visit_block(root);
-	for(i = 0; i < length_of_ins; i++) {
-		printf("Instruction: %x\n", instructions[i]);	
+	InstrContainer* instr_cont = yas_visit_block(root);
+	for(i = 0; i < instr_cont->size; i++) {
+		printf("Instruction: %x\n", instr_cont->instructions[i]);	
 	}
 	printf("--------\n\n");
 
     printf("Yantra VM:\n");
     printf("=====\n");
-	yantra_run(instructions, length_of_ins);
+	yantra_run(instr_cont->instructions, instr_cont->size);
 	printf("--------\n\n");
 }
 
@@ -70,10 +76,10 @@ void non_verbose_stdout(char* source_code) {
 	Ast* root = NULL;
 	lexer = init_lexer(source_code);
 	parser = init_parser(lexer);
-	root = parser_parse_block(parser);
+	root = parser_parse_block(parser, "global");
 	int length_of_ins = root->children_size;
-	unsigned* instructions = yas_visit_block(root);
-	yantra_run(instructions, length_of_ins);
+	InstrContainer* instr_cont = yas_visit_block(root);
+	yantra_run(instr_cont->instructions, instr_cont->size);
 }
 
 int main(int argc, char* argv[]) {

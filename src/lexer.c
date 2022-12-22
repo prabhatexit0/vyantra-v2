@@ -32,12 +32,10 @@ Token* lexer_get_next_token(Lexer* lexer) {
             lexer_skip_ws(lexer);
         } else {
             switch (lexer->c) {
-                case '@': 
-                    return lexer_get_function_token(lexer);
                 case '#': 
                     return lexer_get_scaler_token(lexer);
-                case '!':
-                    return lexer_get_start_end_token(lexer);
+                case '@': 
+                    return lexer_get_call_token(lexer);
                 case '\n':
                     return lexer_get_new_line_token(lexer);
                 case ':':
@@ -54,7 +52,6 @@ Token* lexer_get_next_token(Lexer* lexer) {
 Token* lexer_get_function_token(Lexer* lexer) {
     lexer_move(lexer);
     Token* token = lexer_get_identifier_token(lexer);
-    token->type = token_func;
     return token;
 }
 
@@ -71,22 +68,11 @@ Token* lexer_get_non_prefix_token(Lexer* lexer) {
     if(!strcmp("load", token->value)) token->type = token_load;
     if(!strcmp("halt", token->value)) token->type = token_halt;
     if(!strcmp("show", token->value)) token->type = token_show;
+    if(!strcmp("func", token->value)) token->type = token_func;
+    if(!strcmp("end", token->value)) token->type = token_end;
     if(!strcmp("A", token->value) || 
        !strcmp("B", token->value) ||
        !strcmp("C", token->value)) token->type = token_reg;
-    return token;
-}
-
-Token* lexer_get_start_end_token(Lexer* lexer) {
-    lexer_move(lexer);
-    Token* token = lexer_get_identifier_token(lexer);
-    if(!strcmp(token->value, "start")) 
-        token->type = token_start;
-    else if(!strcmp(token->value, "end")) 
-        token->type = token_end;
-    else 
-        token->type = token_err;
-    
     return token;
 }
 
@@ -148,4 +134,18 @@ Token* lexer_get_label_token(Lexer* lexer) {
     Token* token = lexer_get_identifier_token(lexer);
     token->type = token_label;
     return token;
+}
+
+Token* lexer_get_call_token(Lexer* lexer) {
+    lexer_move(lexer);
+    Token* token = lexer_get_identifier_token(lexer);
+    token->type = token_call;
+    return token;
+}
+
+
+int lexer_is_ws(Lexer* lexer) {
+    if(lexer->c == ' ' || lexer->c == '\t' || lexer->c == '\n')
+        return 1;
+    return 0;
 }

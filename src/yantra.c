@@ -23,8 +23,9 @@ Instruction* init_instruction(unsigned instr_encoded) {
     return instr;
 }
 
-Instruction* yantra_fetch() {
-    return instr_buffer[program_counter++];
+Instruction* yantra_fetch(int length_of_ins) {
+    program_counter = (program_counter + 1) % length_of_ins;
+    return instr_buffer[program_counter];
 }
 
 void yantra_eval(Instruction* instr) {
@@ -76,16 +77,18 @@ void yantra_run(unsigned* instructions, int length_of_ins) {
     Instruction* instr = NULL;
     instr_buffer = calloc(length_of_ins, sizeof(Instruction*));
     int i = 0;
+    printf("Length of instructions in yantra: %d\n", length_of_ins);
 
     for(i = 0; i < length_of_ins; i++) {
         instr_buffer[i] = init_instruction(instructions[i]);
         if(instr_buffer[i]->instr_type == instr_label) {
             labels[instr_buffer[i]->scaler_value] = i;
         }
+        printf("instr_type: %d idx: %d\n", instr_buffer[i]->instr_type, i);
     }
 
     while(is_running) {
-        instr = yantra_fetch();
+        instr = yantra_fetch(length_of_ins+1);
         yantra_eval(instr);
     }
 }

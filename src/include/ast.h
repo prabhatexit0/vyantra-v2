@@ -3,9 +3,10 @@
 
 typedef struct AstStruct {
     enum {
-        ast_start,
-        ast_end,
         ast_block,
+        ast_end,
+        ast_func,
+        ast_call,
         ast_binary,
         ast_load,
         ast_jump,
@@ -35,6 +36,8 @@ typedef struct AstStruct {
         instr_show,
         instr_start,
         instr_end,
+        instr_func,
+        instr_call,
         instr_halt,
     } instr_type;
 
@@ -62,8 +65,29 @@ typedef struct AstStruct {
 
     // Ast Show Props
     // use load_reg for the specified register
+
+    // Ast Func Decl Props
+    // This will contains the AST nodes of the function body
+    struct AstStruct* block;
+
+    // Ast Func Call Props
+    char* identifier;
+    struct AstStruct* func_node;
 } Ast;
 
+typedef struct AstFuncStackStruct {
+    Ast** stack;
+    int size;
+} AstFuncStack;
+
 Ast* init_ast(int type);
+
+AstFuncStack* init_ast_func_stack();
+
+void push(AstFuncStack*, Ast*);
+
+Ast* pop(AstFuncStack*);
+
+Ast* peek(AstFuncStack*);
 
 #endif

@@ -6,9 +6,6 @@ typedef struct TokenStruct {
         token_id,
         token_scaler,
         token_identifier,
-        token_func,
-        token_start,
-        token_end,
         token_reg,
         token_add,
         token_sub,
@@ -24,6 +21,9 @@ typedef struct TokenStruct {
         token_nline,
         token_err,
         token_halt,
+        token_func,
+        token_call,
+        token_end,
         token_eof
     } type;
     char* value;

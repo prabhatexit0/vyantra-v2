@@ -1,0 +1,13 @@
+!start
+@func hello
+    load A #69
+    show A
+@end hello
+
+load A #20
+show A
+
+@hello
+
+!end
+

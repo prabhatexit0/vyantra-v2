@@ -13,30 +13,73 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BINARY "./test.yex"
 unsigned* Instr_Buffer;
+Ast** Call_Stack = NULL;
+int Stack_Size = 0;
 
 void yas_parse_source_to_binary(char* source) {
     Lexer* lexer = init_lexer(source);
     Parser* parser = init_parser(lexer);
-    Ast* globalAstRoot = parser_parse_block(parser);
+    Ast* globalAstRoot = parser_parse_block(parser, "global");
     yas_visit_block(globalAstRoot);
 }
 
-unsigned* yas_visit_block(Ast* blockAst) {
-    int i = 0;
-    unsigned* instructions = calloc(blockAst->children_size, sizeof(unsigned));
-    for(i = 0; i < blockAst->children_size; i++) {
-        instructions[i] = yas_visit_line(blockAst->children[i]);
+InstrContainer* init_instr_cont() {
+    InstrContainer* instr_cont = calloc(1, sizeof(InstrContainer));
+    instr_cont->instructions = NULL;
+    instr_cont->size = 0;
+    return instr_cont;
+}
+
+InstrContainer* yas_visit_block(Ast* blockAst) {
+    // Todo fix Issue: No instructions are returned after function call
+    int i = 0, j = 0, c = 0;
+    InstrContainer* instr_cont = init_instr_cont();
+    InstrContainer* fn_instr_cont = init_instr_cont();
+
+    if(blockAst == NULL) {
+        return instr_cont;
     }
-    return instructions;
+
+    for(i = 0; i < blockAst->children_size; i++) {
+        printf("number of total children : %d\n", blockAst->children_size);
+        instr_cont->instructions = realloc(instr_cont->instructions, sizeof(unsigned) * (instr_cont->size+1));
+        instr_cont->size++;
+        instr_cont->instructions[c++] = yas_visit_line(blockAst->children[i]);
+        printf("here %d\n", instr_cont->instructions[c]);
+
+        if(blockAst->children[i]->type == ast_call) {
+            if(Stack_Size <=  0) {
+                printf("Error: No functions found in Call Stack\n");
+                exit(1);
+            }
+
+            fn_instr_cont = yas_visit_block(blockAst->children[i]->func_node->block);
+            for(j = 0; j < fn_instr_cont->size; j++) {
+                instr_cont->instructions = 
+                    realloc(instr_cont->instructions, sizeof(unsigned) * (instr_cont->size+1));
+                instr_cont->instructions[c++] = fn_instr_cont->instructions[j];
+                instr_cont->size++;
+            }
+        }
+
+        if(blockAst->children[i]->type == ast_end) {
+            if(
+                Stack_Size <= 0 ||
+                Call_Stack[Stack_Size-1]->identifier != blockAst->children[i]->identifier
+                ) {
+                printf("Error: %s is not defined for current scope!\n", blockAst->children[i]->identifier);
+                exit(1);
+            }
+            free(Call_Stack[Stack_Size-1]);
+            Stack_Size--;
+        }
+    }
+    return instr_cont;
 }
 
 unsigned yas_visit_line(Ast* lineAst) {
     switch(lineAst->type) {
-        case ast_start:
-        case ast_end:
-            return yas_visit_start_end(lineAst);
         case ast_binary: 
             return yas_visit_binary(lineAst);
         case ast_load: 
@@ -49,8 +92,13 @@ unsigned yas_visit_line(Ast* lineAst) {
             return yas_visit_halt(lineAst);
         case ast_show:
             return yas_visit_show(lineAst);
+        case ast_call:
+            return yas_visit_call(lineAst);
+        case ast_block:
+        case ast_func:
+        default:
+            return 0;
     }
-    return 0;
 }
 
 unsigned yas_visit_binary(Ast* astNode) {
@@ -102,4 +150,11 @@ unsigned yas_visit_start_end(Ast* astNode) {
     instruction = astNode->instr_type << 24;
     return instruction;
 } 
+
+unsigned yas_visit_call(Ast* astNode) {
+    unsigned instruction = astNode->instr_type << 24;
+    Call_Stack = realloc(Call_Stack, sizeof(Ast*) * ++Stack_Size);
+    Call_Stack[Stack_Size-1] = astNode->func_node;
+    return instruction;
+}
 

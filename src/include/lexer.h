@@ -16,8 +16,6 @@ void lexer_skip_ws(Lexer* lexer);
 
 Token* lexer_get_next_token(Lexer* lexer);
 
-Token* lexer_get_start_end_token(Lexer* lexer);
-
 Token* lexer_get_function_token(Lexer* lexer);
 
 Token* lexer_get_scaler_token(Lexer* lexer);
@@ -33,5 +31,9 @@ Token* lexer_move_with_token(Lexer* lexer, Token* token);
 Token* lexer_get_new_line_token(Lexer* lexer);
 
 Token* lexer_get_label_token(Lexer* lexer);
+
+Token* lexer_get_call_token(Lexer* lexer);
+
+int lexer_is_ws(Lexer* lexer);
 
 #endif

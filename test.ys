@@ -1,10 +1,17 @@
-!start
+show A
+jmp 2
+
+func alpha
+    load A #200
     show A
-    jmp 2
-    show B
-    :2
-    show C
-!end
+    func beta
+        load B #300
+        show B
+    end func
+    @beta
+end func
 
-
-
+@alpha
+show B
+:2
+show C

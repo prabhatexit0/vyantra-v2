@@ -5,11 +5,18 @@
 #include <stdlib.h>
 #include <string.h>
 
+Ast** Ast_Func_Nodes = NULL;
+int Ast_Func_Nodes_Size = 0;
+
+Ast** Func_Stack = NULL;
+int func_stack_size = 0;
+
+
 void parser_eat(Parser* parser, int token_type) {
     if(parser->current_token->type == token_type) {
         parser->current_token = lexer_get_next_token(parser->lexer);
     } else {
-        printf("Error: Unexpected Token\n");
+        printf("Error: Unexpected Token Type: %d, Expected: %d\n", parser->current_token->type, token_type);
         exit(1);
     }
 }
@@ -35,66 +42,59 @@ Ast* parser_parse_line(Parser* parser) {
             return parser_parse_load(parser);
         case token_halt:
             return parser_parse_halt(parser);
-        case token_start:
-        case token_end:
-            return parser_parse_start_end(parser);
         case token_jmp:
             return parser_parse_jump(parser);
         case token_label:
             return parser_parse_label(parser);
         case token_show:
             return parser_parse_show(parser);
+        case token_func:
+            return parser_parse_func(parser);
         default:
-            printf("Error: Unexpected token while parsing statement Type: %d\n", parser->current_token->type);
+            printf(
+                "Error: Unexpected token while parsing statement Type: %d\n",
+                parser->current_token->type);
             exit(1);
     }
     
     return NULL;
 }
 
-Ast* parser_parse_block(Parser* parser) {
-    Ast* blockAst = init_ast(ast_block);
-    Ast* temp = init_ast(ast_block);
-    int i = 0;
-    blockAst->children = calloc(++blockAst->children_size, sizeof(Ast*));
-    blockAst->children[i++] = parser_parse_line(parser);
-    parser->current_token = lexer_get_next_token(parser->lexer);
+Ast* parser_parse_block(Parser* parser, char* identifier) {
+    Ast* block_ast = init_ast(ast_block);
 
-    while(parser->current_token->type == token_nline) {
-        parser_eat(parser, token_nline);
-        if(parser->current_token->type == token_eof || parser->current_token->type == token_nline)
+    while(parser->current_token->type != token_eof) {
+        while(parser->current_token->type == token_nline) {
+            parser_eat(parser, token_nline);
+        }
+            
+        if(parser->current_token->type == token_eof) {
             break;
-        
-        blockAst->children = realloc(
-            blockAst->children,
-            (++blockAst->children_size) * sizeof(struct AstStruct*)
-        );
-        temp = parser_parse_line(parser);
-        blockAst->children[i++] = temp;
+        }
+
+        if(parser->current_token->type == token_end) {
+            if(!strcmp(identifier, parser->current_token->value)) {
+                parser_eat(parser, token_end);
+                return block_ast;
+            } else {
+                printf(
+                    "Error: Function end mismatched. %s expected %s\n", 
+                    parser->current_token->value, identifier);
+                exit(1);
+            }
+        }
+
+        block_ast->children = realloc(block_ast->children, sizeof(Ast*) * ++block_ast->children_size);
+        block_ast->children[block_ast->children_size-1] = parser_parse_line(parser);
         parser->current_token = lexer_get_next_token(parser->lexer);
+
+        while(parser->current_token->type == token_nline) {
+            parser_eat(parser, token_nline);
+        }
     }
 
-    return blockAst;
+    return block_ast; 
 }
-
-Ast* parser_parse_start_end(Parser* parser) {
-    Ast* astNode = NULL;
-    if(parser->current_token->type == token_start) {
-        astNode = init_ast(ast_start);
-        astNode->instr_type = instr_start;
-        return astNode;
-    } 
-    else if(parser->current_token->type == token_end) {
-        astNode = init_ast(ast_end);
-        astNode->instr_type = instr_end;
-        return astNode;
-    }
-    else {
-        printf("Error: Unexpected token!! Should be start or end\n");
-        exit(1);
-    }
-}
-
 
 // will be used for parsing binary math and logical instructions
 // [ instr reg1 reg2 reg3 ]
@@ -171,7 +171,6 @@ Ast* parser_parse_load(Parser* parser) {
         exit(1);
     }
 
-
     parser->current_token = lexer_get_next_token(parser->lexer);
     if(parser->current_token->type != token_scaler) {
         printf("Error: Unexpected Error in parsing, Expected a scaler token\n");
@@ -197,8 +196,8 @@ Ast* parser_parse_label(Parser* parser) {
     Ast* labelAst = init_ast(ast_label);
     labelAst->instr_type = instr_label;
     char* tokenValue = parser->current_token->value;
-    labelAst->scalerIntValue = atoi(tokenValue);
-    return labelAst;
+labelAst->scalerIntValue = atoi(tokenValue);
+return labelAst;
 }
 
 Ast* parser_parse_show(Parser* parser) {
@@ -216,10 +215,39 @@ Ast* parser_parse_show(Parser* parser) {
     return showAst;
 }
 
+
+Ast* parser_parse_func(Parser* parser) {
+    Ast* func_ast = init_ast(ast_func);
+    func_ast->identifier = parser->current_token->value;
+    parser->current_token = lexer_get_next_token(parser->lexer);
+    func_ast->block = parser_parse_block(parser, func_ast->identifier);
+    Ast_Func_Nodes = realloc(Ast_Func_Nodes, sizeof(Ast*) * ++Ast_Func_Nodes_Size);
+    Ast_Func_Nodes[Ast_Func_Nodes_Size-1] = func_ast;
+    return func_ast;
+}
+
+Ast* parser_parse_call(Parser* parser) {
+    Ast* callAst = init_ast(ast_call);
+    callAst->instr_type = instr_call;
+    callAst->identifier = parser->current_token->value;
+    callAst->func_node = parser_get_function(callAst->identifier);
+    return callAst;
+}
+
 Ast* parser_parse_halt() {
     Ast* haltAst = init_ast(ast_halt);
     haltAst->instr_type = instr_halt;
     return haltAst;
+}
+
+Ast* parser_get_function(char* identifier) {
+    int i = 0;
+    for(i = 0; i < Ast_Func_Nodes_Size; i++) {
+        if(!strcmp(identifier, Ast_Func_Nodes[i]->identifier)) {
+            return Ast_Func_Nodes[Ast_Func_Nodes_Size-1];
+        }
+    }
+    return NULL;
 }
 
 int parser_get_register_token(char* value) {
