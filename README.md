@@ -2,7 +2,7 @@
 VYantra or Virtual Yantra is a minimalistic assembly language and a virtual machine. 'Yantra' is Sanskrit for a machine.
 
 ## But why?
-Because I want to learn some shit (2).
+Because I want to learn some s*** (2).
 
 ## What all can it do?
 For now, it supports some instructions using which you can load scaler values and perform mathematical and logical operations, jump statements etc. to get the answer to life universe and everything. Eventually I plan to add support for functions and more instructions to it.
