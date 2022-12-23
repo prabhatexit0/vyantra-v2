@@ -20,7 +20,7 @@ int Stack_Size = 0;
 void yas_parse_source_to_binary(char* source) {
     Lexer* lexer = init_lexer(source);
     Parser* parser = init_parser(lexer);
-    Ast* globalAstRoot = parser_parse_block(parser, "global");
+    Ast* globalAstRoot = parser_parse_block(parser);
     yas_visit_block(globalAstRoot);
 }
 

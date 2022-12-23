@@ -5,12 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-Ast** Ast_Func_Nodes = NULL;
-int Ast_Func_Nodes_Size = 0;
-
-Ast** Func_Stack = NULL;
-int func_stack_size = 0;
-
+AstFuncStack* func_stack = NULL;
 
 void parser_eat(Parser* parser, int token_type) {
     if(parser->current_token->type == token_type) {
@@ -50,9 +45,11 @@ Ast* parser_parse_line(Parser* parser) {
             return parser_parse_show(parser);
         case token_func:
             return parser_parse_func(parser);
+        case token_call:
+            return parser_parse_call(parser);
         default:
             printf(
-                "Error: Unexpected token while parsing statement Type: %d\n",
+                "Error: Unexpected token while parsing statement, Token Type: %d\n",
                 parser->current_token->type);
             exit(1);
     }
@@ -60,29 +57,39 @@ Ast* parser_parse_line(Parser* parser) {
     return NULL;
 }
 
-Ast* parser_parse_block(Parser* parser, char* identifier) {
+Ast* parser_parse_block(Parser* parser) {
     Ast* block_ast = init_ast(ast_block);
 
+    // Initialization of func_stack
+    if(func_stack == NULL) {
+        func_stack = init_ast_func_stack();
+        ast_func_stack_push(func_stack, block_ast);
+    } 
+
+
     while(parser->current_token->type != token_eof) {
+        // skip all new line tokens
         while(parser->current_token->type == token_nline) {
             parser_eat(parser, token_nline);
         }
-            
-        if(parser->current_token->type == token_eof) {
-            break;
-        }
 
+        // if current token is token_end, pop function from the func_stack
         if(parser->current_token->type == token_end) {
-            if(!strcmp(identifier, parser->current_token->value)) {
-                parser_eat(parser, token_end);
-                return block_ast;
-            } else {
-                printf(
-                    "Error: Function end mismatched. %s expected %s\n", 
-                    parser->current_token->value, identifier);
+            if(func_stack == NULL) {
+                printf("Error: Unexpectedly encountered end token. No function present in AST FUNC STACK while parsing\n");
                 exit(1);
             }
-        }
+            parser_eat(parser, token_end);
+
+            if(parser->current_token->type != token_func) {
+                printf("Error: Expected func token after end token to specify func has been ended\n");
+                exit(1);
+            }
+
+            ast_func_stack_pop(func_stack);
+            parser_eat(parser, token_func);
+            return block_ast;
+        } 
 
         block_ast->children = realloc(block_ast->children, sizeof(Ast*) * ++block_ast->children_size);
         block_ast->children[block_ast->children_size-1] = parser_parse_line(parser);
@@ -196,8 +203,8 @@ Ast* parser_parse_label(Parser* parser) {
     Ast* labelAst = init_ast(ast_label);
     labelAst->instr_type = instr_label;
     char* tokenValue = parser->current_token->value;
-labelAst->scalerIntValue = atoi(tokenValue);
-return labelAst;
+    labelAst->scalerIntValue = atoi(tokenValue);
+    return labelAst;
 }
 
 Ast* parser_parse_show(Parser* parser) {
@@ -218,11 +225,11 @@ Ast* parser_parse_show(Parser* parser) {
 
 Ast* parser_parse_func(Parser* parser) {
     Ast* func_ast = init_ast(ast_func);
+    parser_eat(parser, token_func);
     func_ast->identifier = parser->current_token->value;
-    parser->current_token = lexer_get_next_token(parser->lexer);
-    func_ast->block = parser_parse_block(parser, func_ast->identifier);
-    Ast_Func_Nodes = realloc(Ast_Func_Nodes, sizeof(Ast*) * ++Ast_Func_Nodes_Size);
-    Ast_Func_Nodes[Ast_Func_Nodes_Size-1] = func_ast;
+    parser_eat(parser, token_identifier);
+    ast_func_stack_push(func_stack, func_ast);
+    func_ast->block = parser_parse_block(parser);
     return func_ast;
 }
 
@@ -230,7 +237,6 @@ Ast* parser_parse_call(Parser* parser) {
     Ast* callAst = init_ast(ast_call);
     callAst->instr_type = instr_call;
     callAst->identifier = parser->current_token->value;
-    callAst->func_node = parser_get_function(callAst->identifier);
     return callAst;
 }
 
@@ -240,15 +246,6 @@ Ast* parser_parse_halt() {
     return haltAst;
 }
 
-Ast* parser_get_function(char* identifier) {
-    int i = 0;
-    for(i = 0; i < Ast_Func_Nodes_Size; i++) {
-        if(!strcmp(identifier, Ast_Func_Nodes[i]->identifier)) {
-            return Ast_Func_Nodes[Ast_Func_Nodes_Size-1];
-        }
-    }
-    return NULL;
-}
 
 int parser_get_register_token(char* value) {
     if(!strcmp(value, "A")) return reg_one;

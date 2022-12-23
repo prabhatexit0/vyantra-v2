@@ -15,7 +15,7 @@ Parser* init_parser(Lexer* lexer);
 
 Ast* parser_parse_line(Parser* parser);
 
-Ast* parser_parse_block(Parser* parser, char* identifier);
+Ast* parser_parse_block(Parser* parser);
 
 Ast* parser_parse_start_end(Parser* parser);
 
@@ -36,8 +36,6 @@ Ast* parser_parse_call(Parser* parser);
 Ast* parser_parse_end(Parser* parser);
 
 Ast* parser_parse_halt();
-
-Ast* parser_get_function(char* identifier);
 
 int parser_get_register_token(char* value);
 

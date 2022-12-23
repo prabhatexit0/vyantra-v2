@@ -84,10 +84,10 @@ Ast* init_ast(int type);
 
 AstFuncStack* init_ast_func_stack();
 
-void push(AstFuncStack*, Ast*);
+void ast_func_stack_push(AstFuncStack*, Ast*);
 
-Ast* pop(AstFuncStack*);
+Ast* ast_func_stack_pop(AstFuncStack*);
 
-Ast* peek(AstFuncStack*);
+Ast* ast_func_stack_peek(AstFuncStack*);
 
 #endif

@@ -11,10 +11,17 @@ void dfs(Ast* root) {
 	int i = 0;
 	if(!root) return;
 	printf("Type of AST Node: %d\n", root->type);
+	if(root->identifier)
+		printf("Identifier of AST Node: %s\n", root->identifier);
 	printf("Number of Children: %d\n", root->children_size);
+	if(root->type == ast_func) {
+		printf("func block children: %d\n", root->block->children_size);
+	}
 	printf("----\n");
+
+
 	for(i = 0; i < root->children_size; i++) {
-		dfs(root->children[i]);
+        dfs(root->children[i]);
 	}
     if(root->block != NULL) {
         for(i = 0; i < root->block->children_size; i++) {
@@ -42,8 +49,7 @@ void verbose_stdout(char* source_code) {
 	lexer = init_lexer(source_code);
 
 	parser = init_parser(lexer);
-	parser = init_parser(lexer);
-	root = parser_parse_block(parser, "global");
+	root = parser_parse_block(parser);
     printf("Source Code: \n");
     printf("=====\n");
     printf("%s\n", lexer->source_code);
@@ -76,7 +82,7 @@ void non_verbose_stdout(char* source_code) {
 	Ast* root = NULL;
 	lexer = init_lexer(source_code);
 	parser = init_parser(lexer);
-	root = parser_parse_block(parser, "global");
+	root = parser_parse_block(parser);
 	int length_of_ins = root->children_size;
 	InstrContainer* instr_cont = yas_visit_block(root);
 	yantra_run(instr_cont->instructions, instr_cont->size);

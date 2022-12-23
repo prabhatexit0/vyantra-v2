@@ -23,12 +23,12 @@ AstFuncStack* init_ast_func_stack() {
     return func_stack;
 }
 
-void push(AstFuncStack* func_stack, Ast* node) {
-    func_stack = realloc(func_stack, ++func_stack->size * sizeof(AstFuncStack*));
+void ast_func_stack_push(AstFuncStack* func_stack, Ast* node) {
+    func_stack->stack = realloc(func_stack->stack, ++func_stack->size * sizeof(Ast*));
     func_stack->stack[func_stack->size - 1] = node;
 }
 
-Ast* pop(AstFuncStack* func_stack) {
+Ast* ast_func_stack_pop(AstFuncStack* func_stack) {
     Ast* temp = NULL;
     if(func_stack->size == 0) {
         printf("Error: No functions in AST FUNC STACK\n");
@@ -39,7 +39,7 @@ Ast* pop(AstFuncStack* func_stack) {
     return temp;
 }
 
-Ast* peek(AstFuncStack* func_stack) {
+Ast* ast_func_stack_peek(AstFuncStack* func_stack) {
     Ast* temp = NULL;
     if(func_stack->size == 0) {
         printf("Error: No functions in AST FUNC STACK\n");
