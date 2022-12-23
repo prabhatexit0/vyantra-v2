@@ -23,9 +23,8 @@ Instruction* init_instruction(unsigned instr_encoded) {
     return instr;
 }
 
-Instruction* yantra_fetch(int length_of_ins) {
-    program_counter = (program_counter + 1) % length_of_ins;
-    return instr_buffer[program_counter];
+Instruction* yantra_fetch() {
+    return instr_buffer[program_counter++];
 }
 
 void yantra_eval(Instruction* instr) {
@@ -67,7 +66,9 @@ void yantra_eval(Instruction* instr) {
             break;
         case instr_show:
             printf("Register '%c': %d\n", register_tags[instr->load_reg] , registers[instr->load_reg]);
+            break;
         default:
+            is_running = 0;
             break;
     }
 }
@@ -75,8 +76,11 @@ void yantra_eval(Instruction* instr) {
 
 void yantra_run(unsigned* instructions, int length_of_ins) {
     Instruction* instr = NULL;
-    instr_buffer = calloc(length_of_ins, sizeof(Instruction*));
     int i = 0;
+    instr_buffer = calloc(1001, sizeof(Instruction*));
+    for(i = 0; i < 1001; i++) {
+        instr_buffer[i] = init_instruction(0);
+    }
     printf("Length of instructions in yantra: %d\n", length_of_ins);
 
     for(i = 0; i < length_of_ins; i++) {
@@ -84,11 +88,10 @@ void yantra_run(unsigned* instructions, int length_of_ins) {
         if(instr_buffer[i]->instr_type == instr_label) {
             labels[instr_buffer[i]->scaler_value] = i;
         }
-        printf("instr_type: %d idx: %d\n", instr_buffer[i]->instr_type, i);
     }
 
     while(is_running) {
-        instr = yantra_fetch(length_of_ins+1);
+        instr = yantra_fetch();
         yantra_eval(instr);
     }
 }

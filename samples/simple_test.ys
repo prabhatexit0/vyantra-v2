@@ -1,0 +1,6 @@
+load A #100
+show A
+load B #200
+show B
+add C A B
+show C

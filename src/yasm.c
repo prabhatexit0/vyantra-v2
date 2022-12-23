@@ -1,5 +1,5 @@
 /*
- * yasm.c
+ * yasm.instr_counter
  *
  * This is the yantra assembler
  *
@@ -32,8 +32,7 @@ InstrContainer* init_instr_cont() {
 }
 
 InstrContainer* yas_visit_block(Ast* blockAst) {
-    // Todo fix Issue: No instructions are returned after function call
-    int i = 0, j = 0, c = 0;
+    int i = 0, j = 0, instr_counter = 0;
     InstrContainer* instr_cont = init_instr_cont();
     InstrContainer* fn_instr_cont = init_instr_cont();
 
@@ -42,14 +41,15 @@ InstrContainer* yas_visit_block(Ast* blockAst) {
     }
 
     for(i = 0; i < blockAst->children_size; i++) {
-        printf("number of total children : %d\n", blockAst->children_size);
-        instr_cont->instructions = realloc(instr_cont->instructions, sizeof(unsigned) * (instr_cont->size+1));
-        instr_cont->size++;
-        instr_cont->instructions[c++] = yas_visit_line(blockAst->children[i]);
-        printf("here %d\n", instr_cont->instructions[c]);
+        if(blockAst->children[i]->type == ast_func || blockAst->children[i]->instr_type == instr_none) {
+            // Todo: Create the Call Stack functionality.
+            continue;
+        }
 
         if(blockAst->children[i]->type == ast_call) {
-            if(Stack_Size <=  0) {
+            // Todo: Create the Call Stack functionality
+            continue;
+            if(Stack_Size <= 0) {
                 printf("Error: No functions found in Call Stack\n");
                 exit(1);
             }
@@ -58,12 +58,13 @@ InstrContainer* yas_visit_block(Ast* blockAst) {
             for(j = 0; j < fn_instr_cont->size; j++) {
                 instr_cont->instructions = 
                     realloc(instr_cont->instructions, sizeof(unsigned) * (instr_cont->size+1));
-                instr_cont->instructions[c++] = fn_instr_cont->instructions[j];
-                instr_cont->size++;
+                instr_cont->instructions[instr_cont->size++] = fn_instr_cont->instructions[j];
             }
         }
 
         if(blockAst->children[i]->type == ast_end) {
+            // Todo: Create the Call Stack functionality
+            continue;
             if(
                 Stack_Size <= 0 ||
                 Call_Stack[Stack_Size-1]->identifier != blockAst->children[i]->identifier
@@ -74,6 +75,9 @@ InstrContainer* yas_visit_block(Ast* blockAst) {
             free(Call_Stack[Stack_Size-1]);
             Stack_Size--;
         }
+
+        instr_cont->instructions = realloc(instr_cont->instructions, sizeof(unsigned) * (instr_cont->size+1));
+        instr_cont->instructions[instr_cont->size++] = yas_visit_line(blockAst->children[i]);
     }
     return instr_cont;
 }
